@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 import web
-import threading, os, json, re
+import threading, os, json, re, md5
 from utils import view, config
 
 render = view.render
@@ -39,6 +39,7 @@ def QueryDoingTask():
         if match:
             match = match[-1]
             info = {
+                "taskid" : md5.new(filename).hexdigest(),
                 "name" : filename,
                 "downed" : match[0],
                 "progres" : match[4] + '%',

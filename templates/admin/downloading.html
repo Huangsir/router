@@ -1,48 +1,78 @@
 {% extends "base.html" %}
 {% block title %}Downloading{% endblock %}
+{% block header_css %}
+<link href="../static/css/base.css" rel="stylesheet"></link>
+{% endblock %}
 {% block content %}
 <div class="span9">
-    <div class="hero-unit">
-        <h5>Hello, world!</h5>
-        <table class="table table-scriped">
-        </table>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-    </div>
-    {{env}}
     <div class="row-fluid">
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
-    </div><!--/row-->
-    <div class="row-fluid">
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
-        <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-        </div><!--/span-->
+        <h5>Downloading Task</h5>
+        <div class="mini-layout">
+            <table class="table table-hover" id="dwning-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>名称</th>
+                        <th>已下载</th>
+                        <th>速度</th>
+                        <th>完成度</th>
+                        <th>剩余时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
     </div><!--/row-->
 </div><!--/span-->
+{% endblock %}
+
+{% block bottom_script %}
+<script type="text/javascript">
+    function coverRunTime(runtime) {
+        return runtime.replace('d', '天').replace('h', '小时').replace('m', '分').replace('s', '秒');
+    }
+    function coverProgres(progres) {
+        return "<div class='progress progress-striped active'><div class='bar' style='width: "+progres+"'></div></div>";
+    }
+    function queryTask() {
+        $.get('downloading/query', function(data){
+            var key = ["name", "downed", "speed", "progres", "runtime", "operation"];
+            var new_data = [];
+            data = $.parseJSON(data);
+            for (i = 0; i < data.length; i++) {
+                item = data[i];
+                row = $("#"+item['taskid']);
+                if (!row.length) {
+                    new_data[new_data.length] = item;
+                } else {
+                    row.children().eq(2).text(item["downed"]);
+                    row.children().eq(3).text(item["speed"]);
+                    row.children().eq(4).html(coverProgres(item["progres"]));
+                    row.children().eq(5).html(coverRunTime(item["runtime"]));
+                }
+            }
+            for (i = 0; i < new_data.length; i++) {
+                item = new_data[i];
+                row = "<tr id="+item['taskid']+"><td>"+(i+1)+"</td>";
+                for (j = 0; j < key.length; j++) {
+                    if ("runtime" == key[j]) {
+                        item[key[j]] = item[key[j]].replace('d', '天').replace('h', '小时').replace('m', '分').replace('s', '秒');
+                    } else if ("progres" == key[j]) {
+                        item[key[j]] = "<div class='progress progress-striped active'><div class='bar' style='width: "+item[key[j]]+"'></div></div>";
+                    } else if ("operation" == key[j]) {
+                        item[key[j]] = "#";
+                    }
+                    td = "<td>"+item[key[j]]+"</td>";
+                    row += td;
+                }
+                row += "</tr>";
+                $("#dwning-table tr:last").after(row);
+            }
+        });
+    }
+    queryTask();
+    setInterval('queryTask()',10000);
+</script>
 {% endblock %}
