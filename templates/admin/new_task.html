@@ -8,17 +8,18 @@
 
 {% block content %}
 <div class="span9">
-    <h3>New Task</h3>
+    <h3>新建下载任务</h3>
     <div class="row-flud">
         <div class="mini-layout mini-margin-bottom">
             <form class="form-horizontal" id="normal-url">
-                <legend>Normar URL</legend>
+                <legend><span style="padding-left:5px">普通链接 / 迅雷链接</span></legend>
+                <input type="hidden" name="type" value="normal_url"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>URL</strong>
                     </label>
                     <div class="controls">
-                        <textarea name="addr" rows="3" class="input-xxlarge" placeholder="Input a normal url..."></textarea>
+                        <textarea name="addr" id="n-addr" rows="3" class="input-xxlarge" placeholder="Input a url..."></textarea>
                     </div>
                 </div>
                 <div class="control-group">
@@ -31,13 +32,14 @@
         </div>
         <div class="row-flud mini-layout mini-margin-bottom">
             <form class="form-horizontal" id="tor-url">
-                <legend>Torrent URL</legend>
+                <legend><span style="padding-left:5px">BT种子链接</span></legend>
+                <input type="hidden" name="type" value="torrent_url"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>URL</strong>
                     </label>
                     <div class="controls">
-                        <textarea name="addr" rows="3" class="input-xxlarge" placeholder="Input the .torrent file address..."></textarea>
+                        <textarea name="addr" id="t-addr" rows="3" class="input-xxlarge" placeholder="Input the .torrent file address..."></textarea>
                     </div>
                 </div>
                 <div class="control-group">
@@ -50,13 +52,14 @@
         </div>
         <div class="row-flud mini-layout mini-margin-bottom">
             <form class="form-horizontal" id="tor-file">
-                <legend>Torrent File</legend>
+                <legend><span style="padding-left:5px">BT种子上传</span></legend>
+                <input type="hidden" name="type" value="torrent_file"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>FILE</strong>
                     </label>
                     <div class="controls">
-                        <input name="torfile" type="file" class="input-xxlarge" placeholder=".input-xxlarge"></input>
+                        <input name="torfile" id="torfile" type="file" class="input-xxlarge" placeholder=".input-xxlarge"></input>
                     </div>
                 </div>
                 <div class="control-group">
@@ -73,25 +76,35 @@
 
 {% block bottom_script %}
 <script type="text/javascript">
+    var pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
     $("#normal-url").submit(function(){
-        $.post("new_task", $("#normal-url").serialize())
-        .done(function(data){
-            $("#normal-url-alert").fadeIn(200).delay(1000).fadeOut(300)
-        });
+        if (pattern.exec($("#n-addr").val())) {
+            $.post("new_task", $("#normal-url").serialize())
+            .done(function(data){
+                $("#normal-url-alert").fadeIn(200).delay(1000).fadeOut(300)
+            });
+        }
+        $("#n-addr").val("");
         return false;
     });
     $("#tor-url").submit(function(){
-        $.post("new_task", $("#tor-url").serialize())
-        .done(function(data){
-            $("#tor-url-alert").fadeIn(200).delay(1000).fadeOut(300)
-        });
+        if (pattern.exec($("#t-addr").val())) {
+            $.post("new_task", $("#tor-url").serialize())
+            .done(function(data){
+                $("#tor-url-alert").fadeIn(200).delay(1000).fadeOut(300)
+            });
+        }
+        $("#t-addr").val("");
         return false;
     });
     $("#tor-file").submit(function(){
-        $.post("new_task", $("#tor-file").serialize())
-        .done(function(data){
-            $("#tor-file-alert").fadeIn(200).delay(1000).fadeOut(300)
-        });
+        if ($("torfile").val() != "") {
+            $.post("new_task", $("#tor-file").serialize())
+            .done(function(data){
+                $("#tor-file-alert").fadeIn(200).delay(1000).fadeOut(300)
+            });
+        }
+        $("#torfile").val("");
         return false;
     });
 </script>

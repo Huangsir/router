@@ -1,9 +1,10 @@
 # -*- coding: UTF-8 -*-
 import web
 import threading, os, json, re, md5
-from utils import view, config
+from utils import view, config, task
 
 render = view.render
+Thunder = task.Thunder
 
 class Downloading:
     def GET(self):
@@ -12,6 +13,16 @@ class Downloading:
 class NewTask:
     def GET(self):
         return render.new_task()
+    def POST(self):
+        i = web.input(addr={}, type=None, torfile={})
+        if i.type == 'normal_url':
+            task = Thunder(addr=i.addr)
+            task.Start()
+        elif i.type == 'torrent_url':
+            print i
+        elif i.type == 'torrent_file':
+            print i
+        return json.dumps({"c":0})
 
 #Ajax
 class Query:
@@ -26,6 +37,7 @@ class Query:
             tasks += QueryDoingTask()
             tasks += QueryDoneTask()
         return json.dumps(tasks)
+
 
 def QueryDoingTask():
     tasks = []
