@@ -1,20 +1,20 @@
 #!/usr/bin/python
 import web
-from apps.admin import login
+from apps.admin import view
 
 urls = (
-    '^/admin/login$',                'apps.admin.login.login',
+    '^/admin/login$',                'apps.admin.view.Login',
 
-    '^/admin/index$',                'apps.admin.index.Default',
+    '^/admin/index$',                'apps.admin.view.Default',
 
-    '^/admin/downloading$',          'apps.admin.down.Downloading',
-    '^/admin/downloading/query$',    'apps.admin.down.Query',
+    '^/admin/downloading$',          'apps.admin.view.Downloading',
+    '^/admin/downloading/query$',    'apps.admin.view.Query',
 
-    '^/admin/new_task$',             'apps.admin.down.NewTask',
-    '^/admin/$',                     'apps.admin.index.Default',
+    '^/admin/new_task$',             'apps.admin.view.NewTask',
+    '^/admin/$',                     'apps.admin.view.Default',
 
-    '^/(.+)$',                       'apps.admin.index.Default',
-    '^/$',                           'apps.admin.index.Default',
+    '^/(.+)$',                       'apps.admin.view.Default',
+    '^/$',                           'apps.admin.view.Default',
 )
 
 if __name__ == '__main__':
