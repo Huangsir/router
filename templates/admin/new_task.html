@@ -13,7 +13,7 @@
         <div class="mini-layout mini-margin-bottom">
             <form class="form-horizontal" id="normal-url">
                 <legend><span style="padding-left:5px">普通链接 / 迅雷链接</span></legend>
-                <input type="hidden" name="type" value="normal_url"></input>
+                <input type="hidden" name="type" value="1"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>URL</strong>
@@ -33,7 +33,7 @@
         <div class="row-flud mini-layout mini-margin-bottom">
             <form class="form-horizontal" id="tor-url">
                 <legend><span style="padding-left:5px">BT种子链接</span></legend>
-                <input type="hidden" name="type" value="torrent_url"></input>
+                <input type="hidden" name="type" value="2"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>URL</strong>
@@ -51,9 +51,9 @@
             </form>
         </div>
         <div class="row-flud mini-layout mini-margin-bottom">
-            <form class="form-horizontal" id="tor-file">
+            <form class="form-horizontal" id="tor-file" name="tor-file" enctype="multipart/form-data">
                 <legend><span style="padding-left:5px">BT种子上传</span></legend>
-                <input type="hidden" name="type" value="torrent_file"></input>
+                <input type="hidden" name="type" value="3"></input>
                 <div class="control-group">
                     <label class="control-label" for="inputEmail">
                         <strong>FILE</strong>
@@ -75,11 +75,15 @@
 {% endblock %}
 
 {% block bottom_script %}
+<script type="text/javascript" src="{{ Link('static/js/jquery.ui.widget.js') }}"></script>
+<script type="text/javascript" src="{{ Link('static/js/jquery.iframe-transport.js') }}"></script>
+<script type="text/javascript" src="{{ Link('static/js/jquery.fileupload.js') }}"></script>
 <script type="text/javascript">
+    var action = "{{ Link('admin/new_task') }}"
     var pattern = /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
     $("#normal-url").submit(function(){
         if (pattern.exec($("#n-addr").val())) {
-            $.post("new_task", $("#normal-url").serialize())
+            $.post(action, $("#normal-url").serialize())
             .done(function(data){
                 $("#normal-url-alert").fadeIn(200).delay(1000).fadeOut(300)
             });
@@ -89,7 +93,7 @@
     });
     $("#tor-url").submit(function(){
         if (pattern.exec($("#t-addr").val())) {
-            $.post("new_task", $("#tor-url").serialize())
+            $.post(action, $("#tor-url").serialize())
             .done(function(data){
                 $("#tor-url-alert").fadeIn(200).delay(1000).fadeOut(300)
             });
@@ -99,10 +103,13 @@
     });
     $("#tor-file").submit(function(){
         if ($("torfile").val() != "") {
-            $.post("new_task", $("#tor-file").serialize())
-            .done(function(data){
+            var oData = new FormData(document.forms.namedItem("tor-file"))
+            var oReq = new XMLHttpRequest()
+            oReq.open("POST", action)
+            oReq.onload = function(oEvent) {
                 $("#tor-file-alert").fadeIn(200).delay(1000).fadeOut(300)
-            });
+            }
+            oReq.send(oData)
         }
         $("#torfile").val("");
         return false;

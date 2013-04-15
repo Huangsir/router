@@ -6,7 +6,7 @@ class ThunderTask(Model, Base):
     __table_args__ = {"sqlite_autoincrement" : True}
     id = Column("id", Integer, primary_key = True, autoincrement = True)
     name = Column("name", String(255))
-    addr = Column("addr", String(1023), unique = True)
+    addr = Column("addr", String(1023))
     type = Column("type", Integer)
     status = Column("status", Integer)
 

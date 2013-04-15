@@ -11,7 +11,7 @@ class Render:
         env = web.ctx.env
         env.update(self.ctx)
         env['action'] = name
-        self.env.globals['CoverLink'] = CoverLink
+        self.env.globals['Link'] = CoverLink
         self.env.globals.update({'env' : env})
         return self.env.get_template('%s.html' % name).render
 

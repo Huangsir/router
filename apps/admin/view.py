@@ -1,7 +1,8 @@
 # -*- coding: UTF-8 -*-
 import web
 import os, json, re, md5
-from utils import config, render
+from utils import config, render, utils
+from thunder.model import ThunderTask
 from thunder import thunder
 
 SITE_BAR = {
@@ -23,21 +24,34 @@ render.ctx['site_bar'] = SITE_BAR
 
 class Downloading:
     def GET(self):
-        print thunder
         return render.downloading()
 
 class NewTask:
     def GET(self):
         return render.new_task()
+
     def POST(self):
         i = web.input(addr={}, type=None, torfile={})
-        if i.type == 'normal_url':
-            task = Thunder(addr=i.addr)
-            task.Start()
-        elif i.type == 'torrent_url':
-            print i
-        elif i.type == 'torrent_file':
-            print i
+        if i.type == config.THUNDER_TYPE_NORMAL_URL or i.type == config.THUNDER_TYPE_TORRRENT_URL:
+            if utils.CheckIsLegelUrl(i.addr):
+                task = ThunderTask(
+                    name=os.path.basename(i.addr), 
+                    addr=i.addr, 
+                    type=i.type, 
+                    status=config.THUNDER_TASK_TYPE_INIT,)
+                thunder.AddTask(task)
+        elif i.type == config.THUNDER_TYPE_TORRRENT_FILE:
+            if i.torfile.file and i.torfile.filename:
+                filepath = os.path.join(config.THUNDER_TORRRENT_PATH, i.torfile.filename)
+                fout = open(filepath, "w")
+                fout.write(i.torfile.file.read())
+                fout.close()
+                task = ThunderTask(
+                    name=i.torfile.filename,
+                    addr=filepath,
+                    type=i.type,
+                    status=config.THUNDER_TASK_TYPE_INIT,)
+                thunder.AddTask(task)
         return json.dumps({"c":0})
 
 class Query:

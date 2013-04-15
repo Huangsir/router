@@ -56,7 +56,7 @@
                             <li class="nav-header">{{ top_name }}</li>
                             {% set nav = env.site_bar[top_name] %}
                             {% for bar in nav %}
-                            <li{% if bar == env.action %} class="active"{% endif %}><a href="{{ CoverLink(nav[bar].href) }}">{{ nav[bar].name }}</a></li>
+                            <li{% if bar == env.action %} class="active"{% endif %}><a href="{{ Link(nav[bar].href) }}">{{ nav[bar].name }}</a></li>
                             {% endfor %}
                             {% endfor %}
                         </ul>
